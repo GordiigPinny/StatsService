@@ -45,7 +45,9 @@ THIRD_PARTY_APPS = [
 ]
 
 DEV_APPS = [
-    'Stats',
+    'RequestStats',
+    'PlacesStats',
+    'AwardsStats',
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + DEV_APPS

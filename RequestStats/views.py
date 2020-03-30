@@ -1,7 +1,7 @@
 from rest_framework.generics import ListCreateAPIView, RetrieveAPIView
 from rest_framework.pagination import LimitOffsetPagination
-from Stats.models import RequestsStats
-from Stats.serializers import RequestsStatsSerializer
+from RequestStats.models import RequestsStats
+from RequestStats.serializers import RequestsStatsSerializer
 
 
 class RequestsStatsListView(ListCreateAPIView):

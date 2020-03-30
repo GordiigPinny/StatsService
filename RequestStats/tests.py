@@ -1,5 +1,5 @@
 from TestUtils.models import BaseTestCase
-from Stats.models import RequestsStats
+from RequestStats.models import RequestsStats
 
 
 class RequestsStatsListTestCase(BaseTestCase):
@@ -11,7 +11,8 @@ class RequestsStatsListTestCase(BaseTestCase):
         self.path = self.url_prefix + 'requests/'
         self.request_stat = RequestsStats.objects.create(method='GET', endpoint='ee', user_id=1, gateway_process_time=10,
                                                          status_code=200, cb_end_state='CLOSED', cb_start_state='CLOSED',
-                                                         is_fully_processed=True, queue_length=True)
+                                                         is_fully_processed=True, queue_length=True,
+                                                         request_dt='2020-03-12T14:15Z')
         self.data_201_1 = {
             'method': 'GET',
             'user_id': 1,
@@ -22,6 +23,7 @@ class RequestsStatsListTestCase(BaseTestCase):
             'cb_start_state': 'CLOSED',
             'cb_end_state': 'CLOSED',
             'queue_length': 0,
+            'request_dt': '2020-03-12T14:15Z',
         }
         self.data_201_2 = {
             'method': 'GET',
@@ -33,6 +35,7 @@ class RequestsStatsListTestCase(BaseTestCase):
             'cb_start_state': 'CLOSED',
             'cb_end_state': 'CLOSED',
             'queue_length': 0,
+            'request_dt': '2020-03-12T14:15Z',
         }
         self.data_400_1 = {
             'method': 'GET',
@@ -47,6 +50,7 @@ class RequestsStatsListTestCase(BaseTestCase):
             'cb_start_state': 'CLOSED',
             'cb_end_state': 'CLOSED',
             'queue_length': 0,
+            'request_dt': '2020-03-12T14:15Z',
         }
         self.data_400_3 = {
             'method': 'GET',
@@ -58,6 +62,7 @@ class RequestsStatsListTestCase(BaseTestCase):
             'cb_start_state': 'WRONG',
             'cb_end_state': 'WRONG',
             'queue_length': 0,
+            'request_dt': '2020-03-12T14:15Z',
         }
 
     def testGet200_OK(self):
@@ -88,7 +93,8 @@ class RequestsStatsTestCase(BaseTestCase):
         super().setUp()
         self.request_stat = RequestsStats.objects.create(method='GET', endpoint='ee', user_id=1, gateway_process_time=10,
                                                          status_code=200, cb_end_state='CLOSED', cb_start_state='CLOSED',
-                                                         is_fully_processed=True, queue_length=True)
+                                                         is_fully_processed=True, queue_length=True,
+                                                         request_dt='2020-03-12T14:15Z')
         self.path = self.url_prefix + f'requests/{self.request_stat.id}/'
         self.path_404 = self.url_prefix + f'requests/{self.request_stat.id+10000}/'
 

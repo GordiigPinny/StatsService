@@ -22,7 +22,9 @@ from django.conf import settings
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    url(r'^api/', include('Stats.urls')),
+    url(r'^api/', include('RequestStats.urls')),
+    url(r'^api/', include('PlacesStats.urls')),
+    url(r'^api/', include('AwardsStats.urls')),
 ]
 
 

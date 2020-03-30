@@ -1,5 +1,6 @@
+import datetime
 from rest_framework import serializers
-from Stats.models import RequestsStats
+from RequestStats.models import RequestsStats
 
 
 class RequestsStatsSerializer(serializers.ModelSerializer):
@@ -27,6 +28,7 @@ class RequestsStatsSerializer(serializers.ModelSerializer):
             'cb_start_state',
             'cb_end_state',
             'queue_length',
+            'request_dt',
         ]
 
     def validate(self, attrs):
@@ -37,6 +39,9 @@ class RequestsStatsSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError('Начальное сосотояние cb невалидено')
         if attrs.get('cb_end_state', '') not in [x[0] for x in RequestsStats.CB_STATE_CHOICES]:
             raise serializers.ValidationError('Начальное сосотояние cb невалидено')
+        if isinstance(attrs['request_dt'], str):
+            str_dt = attrs['request_dt']
+            attrs['request_dt'] = datetime.datetime.strptime(str_dt, '%Y-%m-%dT%H:%M:%SZ')
         return attrs
 
     def create(self, validated_data):

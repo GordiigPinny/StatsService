@@ -26,6 +26,7 @@ class RequestsStats(models.Model):
     cb_start_state = models.CharField(max_length=16, choices=CB_STATE_CHOICES, default='CLOSE')
     cb_end_state = models.CharField(max_length=16, choices=CB_STATE_CHOICES, default='CLOSE')
     queue_length = models.PositiveIntegerField()
+    request_dt = models.DateTimeField()
 
     def __str__(self):
         return f'{self.method} {self.endpoint} by {self.user_id if self.user_id else "anon"}'
