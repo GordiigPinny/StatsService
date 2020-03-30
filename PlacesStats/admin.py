@@ -1,3 +1,6 @@
 from django.contrib import admin
+from PlacesStats.models import PlaceStats, AcceptStats, RatingStats
 
-# Register your models here.
+admin.site.register(PlaceStats)
+admin.site.register(AcceptStats)
+admin.site.register(RatingStats)

@@ -5,17 +5,22 @@ class PlaceStats(models.Model):
     """
     Модель статистики по изменению мест
     """
+    OPENED, CREATED, EDITED, DELETED = 'OPENED', 'CREATED', 'EDITED', 'DELETED'
     ACTION_CHOICES = (
-        ('OPENED', 'OPENED'),
-        ('CREATED', 'CREATED'),
-        ('EDITED', 'EDITED'),
-        ('DELETED', 'DELETED'),
+        (OPENED, OPENED),
+        (CREATED, CREATED),
+        (EDITED, EDITED),
+        (DELETED, DELETED),
     )
 
     action = models.CharField(max_length=16, choices=ACTION_CHOICES)
     place_id = models.PositiveIntegerField()
     user_id = models.PositiveIntegerField(null=True)
     action_dt = models.DateTimeField()
+
+    @classmethod
+    def action_statuses_for_registered_user(cls):
+        return [cls.CREATED, cls.EDITED, cls.DELETED]
 
     def __str__(self):
         return f'{self.action} {self.place_id} by  {self.user_id if self.user_id else "anon"}'
@@ -25,9 +30,10 @@ class AcceptStats(models.Model):
     """
     Модель статистики по подтверждениям мест
     """
+    ACCEPTED, DECLINED = 'ACCEPTED', 'DECLINED'
     ACTION_CHOICES = (
-        ('ACCEPTED', 'ACCEPTED'),
-        ('DECLINED', 'DECLINED'),
+        (ACCEPTED, ACCEPTED),
+        (DECLINED, DECLINED),
     )
 
     action = models.CharField(max_length=16, choices=ACTION_CHOICES)
