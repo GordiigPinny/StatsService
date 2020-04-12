@@ -149,3 +149,10 @@ try:
     from ApiRequesters.settings import *
 except ImportError as e:
     raise e
+
+
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': [
+        'ApiRequesters.Auth.permissions.IsAppTokenCorrect',
+    ]
+}
