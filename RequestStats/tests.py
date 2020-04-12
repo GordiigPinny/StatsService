@@ -94,6 +94,7 @@ class RequestsStatsTestCase(BaseTestCase):
     """
     def setUp(self):
         super().setUp()
+        self.token.set_role(self.token.ROLES.SUPERUSER)
         self.request_stat = RequestsStats.objects.create(method='GET', endpoint='ee', user_id=1, process_time=10,
                                                          status_code=200, request_dt='2020-03-12T14:15Z')
         self.path = self.url_prefix + f'requests/{self.request_stat.id}/'
@@ -101,6 +102,10 @@ class RequestsStatsTestCase(BaseTestCase):
 
     def testGet200_OK(self):
         _ = self.get_response_and_check_status(url=self.path)
+
+    def testGet401_403_NotSuperuser(self):
+        self.token.set_role(self.token.ROLES.USER)
+        response = self.get_response_and_check_status(url=self.path, expected_status_code=[401, 403])
 
     def testGet404_WrongId(self):
         _ = self.get_response_and_check_status(url=self.path_404, expected_status_code=404)
