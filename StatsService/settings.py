@@ -153,6 +153,6 @@ except ImportError as e:
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
-        'ApiRequesters.Auth.permissions.IsAppTokenCorrect',
+        'StatsService.permissions.WriteFromAppReadFromSuperuserPermission',
     ]
 }
