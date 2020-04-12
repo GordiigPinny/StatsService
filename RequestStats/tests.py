@@ -8,6 +8,7 @@ class RequestsStatsListTestCase(BaseTestCase):
     """
     def setUp(self):
         super().setUp()
+        self.token.set_role(self.token.ROLES.SUPERUSER)
         self.path = self.url_prefix + 'requests/'
         self.request_stat = RequestsStats.objects.create(method='GET', endpoint='ee', user_id=1, process_time=10,
                                                          status_code=200, request_dt='2020-03-12T14:15Z')
@@ -59,6 +60,10 @@ class RequestsStatsListTestCase(BaseTestCase):
         response = self.get_response_and_check_status(url=self.path + f'?user_id={self.request_stat.user_id+1000}')
         self.assertEqual(len(response), 0, msg='Instance in response')
 
+    def testGet401_403_NotSuperuser(self):
+        self.token.set_role(self.token.ROLES.USER)
+        response = self.get_response_and_check_status(url=self.path, expected_status_code=[401, 403])
+
     def testPost201_OKRegistered(self):
         _ = self.post_response_and_check_status(url=self.path, data=self.data_201_1)
 
@@ -74,6 +79,14 @@ class RequestsStatsListTestCase(BaseTestCase):
     def testPost400_WrongDTFormat(self):
         _ = self.post_response_and_check_status(url=self.path, data=self.data_400_3, expected_status_code=400)
 
+    def testPost401_403_WrongAppToken(self):
+        self.token.set_error(self.token.ERRORS_KEYS.APP_AUTH, self.token.ERRORS.BAD_CODE_403_TOKEN)
+        _ = self.post_response_and_check_status(url=self.path, data=self.data_201_1, expected_status_code=[401, 403])
+
+    def testPost401_403_ErrorOnAuthService(self):
+        self.token.set_error(self.token.ERRORS_KEYS.APP_AUTH, self.token.ERRORS.ERROR_TOKEN)
+        _ = self.post_response_and_check_status(url=self.path, data=self.data_201_1, expected_status_code=[401, 403])
+
 
 class RequestsStatsTestCase(BaseTestCase):
     """
@@ -81,6 +94,7 @@ class RequestsStatsTestCase(BaseTestCase):
     """
     def setUp(self):
         super().setUp()
+        self.token.set_role(self.token.ROLES.SUPERUSER)
         self.request_stat = RequestsStats.objects.create(method='GET', endpoint='ee', user_id=1, process_time=10,
                                                          status_code=200, request_dt='2020-03-12T14:15Z')
         self.path = self.url_prefix + f'requests/{self.request_stat.id}/'
@@ -88,6 +102,10 @@ class RequestsStatsTestCase(BaseTestCase):
 
     def testGet200_OK(self):
         _ = self.get_response_and_check_status(url=self.path)
+
+    def testGet401_403_NotSuperuser(self):
+        self.token.set_role(self.token.ROLES.USER)
+        response = self.get_response_and_check_status(url=self.path, expected_status_code=[401, 403])
 
     def testGet404_WrongId(self):
         _ = self.get_response_and_check_status(url=self.path_404, expected_status_code=404)
