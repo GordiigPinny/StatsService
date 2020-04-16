@@ -10,7 +10,7 @@ class RequestsStatsSerializer(serializers.ModelSerializer):
     method = serializers.ChoiceField(choices=RequestsStats.REQUEST_METHOD_CHOICES)
     endpoint = serializers.CharField(max_length=256, allow_blank=False, allow_null=False)
     user_id = serializers.IntegerField(min_value=1, allow_null=True)
-    process_time = serializers.IntegerField(min_value=0)
+    process_time = serializers.FloatField(min_value=0)
 
     class Meta:
         model = RequestsStats
@@ -23,13 +23,6 @@ class RequestsStatsSerializer(serializers.ModelSerializer):
             'process_time',
             'request_dt',
         ]
-
-    def validate(self, attrs):
-        attrs = super().validate(attrs)
-        if isinstance(attrs['request_dt'], str):
-            str_dt = attrs['request_dt']
-            attrs['request_dt'] = datetime.datetime.strptime(str_dt, '%Y-%m-%dT%H:%M:%SZ')
-        return attrs
 
     def create(self, validated_data):
         new = RequestsStats.objects.create(**validated_data)

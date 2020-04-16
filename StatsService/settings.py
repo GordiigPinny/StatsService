@@ -150,6 +150,7 @@ try:
 except ImportError as e:
     raise e
 
+ALLOW_REQUESTS = True
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [

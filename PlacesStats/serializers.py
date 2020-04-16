@@ -25,9 +25,6 @@ class PlaceStatsSerializer(serializers.ModelSerializer):
         attrs = super().validate(attrs)
         if attrs['action'] in PlaceStats.action_statuses_for_registered_user() and attrs['user_id'] is None:
             raise serializers.ValidationError('Поле "user_id" может быть null только при действии OPENED')
-        if isinstance(attrs['action_dt'], str):
-            str_dt = attrs['action_dt']
-            attrs['action_dt'] = datetime.datetime.strptime(str_dt, '%Y-%m-%dT%H:%M:%SZ')
         return attrs
 
     def create(self, validated_data):
@@ -59,13 +56,6 @@ class AcceptStatsSerializer(serializers.ModelSerializer):
             'action_dt',
         ]
 
-    def validate(self, attrs):
-        attrs = super().validate(attrs)
-        if isinstance(attrs['action_dt'], str):
-            str_dt = attrs['action_dt']
-            attrs['action_dt'] = datetime.datetime.strptime(str_dt, '%Y-%m-%dT%H:%M:%SZ')
-        return attrs
-
     def create(self, validated_data):
         new = AcceptStats.objects.create(**validated_data)
         return new
@@ -96,13 +86,6 @@ class RatingStatsSerializer(serializers.ModelSerializer):
             'new_rating',
             'action_dt',
         ]
-
-    def validate(self, attrs):
-        attrs = super().validate(attrs)
-        if isinstance(attrs['action_dt'], str):
-            str_dt = attrs['action_dt']
-            attrs['action_dt'] = datetime.datetime.strptime(str_dt, '%Y-%m-%dT%H:%M:%SZ')
-        return attrs
 
     def create(self, validated_data):
         new = RatingStats.objects.create(**validated_data)
