@@ -8,6 +8,7 @@ class PlacesStatsListTestCase(BaseTestCase):
     """
     def setUp(self):
         super().setUp()
+        self.token.set_role(self.token.ROLES.SUPERUSER)
         self.path = self.url_prefix + 'places/'
         self.stat = PlaceStats.objects.create(place_id=1, user_id=1, action=PlaceStats.OPENED,
                                               action_dt='2020-03-01T12:12:12Z')
@@ -60,6 +61,10 @@ class PlacesStatsListTestCase(BaseTestCase):
         response = self.get_response_and_check_status(url=self.path + f'?place_id={self.stat.place_id+1000}')
         self.assertEqual(len(response), 0, msg='Instance in response')
 
+    def testGet401_403_NotSuperuser(self):
+        self.token.set_role(self.token.ROLES.USER)
+        _ = self.get_response_and_check_status(url=self.path, expected_status_code=[401, 403])
+
     def testPost201_OKWithUserId(self):
         _ = self.post_response_and_check_status(url=self.path, data=self.data_201_1)
 
@@ -78,6 +83,14 @@ class PlacesStatsListTestCase(BaseTestCase):
     def testPost400_WrongDTFormat(self):
         _ = self.post_response_and_check_status(url=self.path, data=self.data_400_4, expected_status_code=400)
 
+    def testPost401_403_WrongAppToken(self):
+        self.token.set_error(self.token.ERRORS_KEYS.APP_AUTH, self.token.ERRORS.BAD_CODE_403_TOKEN)
+        _ = self.post_response_and_check_status(url=self.path, data=self.data_201_1, expected_status_code=[401, 403])
+
+    def testPost401_403_ErrorOnAuthService(self):
+        self.token.set_error(self.token.ERRORS_KEYS.APP_AUTH, self.token.ERRORS.BAD_CODE_403_TOKEN)
+        _ = self.post_response_and_check_status(url=self.path, data=self.data_201_1, expected_status_code=[401, 403])
+
 
 class PlaceStatsTestCase(BaseTestCase):
     """
@@ -85,6 +98,7 @@ class PlaceStatsTestCase(BaseTestCase):
     """
     def setUp(self):
         super().setUp()
+        self.token.set_role(self.token.ROLES.SUPERUSER)
         self.stat = PlaceStats.objects.create(place_id=1, user_id=1, action=PlaceStats.OPENED,
                                               action_dt='2020-03-01T12:12:12Z')
         self.path = self.url_prefix + f'places/{self.stat.id}/'
@@ -92,6 +106,10 @@ class PlaceStatsTestCase(BaseTestCase):
 
     def testGet200_OK(self):
         _ = self.get_response_and_check_status(url=self.path)
+
+    def testGet401_403_NotSuperuser(self):
+        self.token.set_role(self.token.ROLES.USER)
+        _ = self.get_response_and_check_status(url=self.path, expected_status_code=[401, 403])
 
     def testGet404_WrongId(self):
         _ = self.get_response_and_check_status(url=self.path_404, expected_status_code=404)
@@ -103,6 +121,7 @@ class AcceptStatsListTestCase(BaseTestCase):
     """
     def setUp(self):
         super().setUp()
+        self.token.set_role(self.token.ROLES.SUPERUSER)
         self.path = self.url_prefix + 'accepts/'
         self.stat = AcceptStats.objects.create(place_id=1, user_id=1, action=AcceptStats.ACCEPTED,
                                                action_dt='2020-03-01T12:12:12Z')
@@ -143,6 +162,10 @@ class AcceptStatsListTestCase(BaseTestCase):
         response = self.get_response_and_check_status(url=self.path + f'?place_id={self.stat.place_id+1000}')
         self.assertEqual(len(response), 0, msg='Instance in response')
 
+    def testGet401_403_NotSuperuser(self):
+        self.token.set_role(self.token.ROLES.USER)
+        _ = self.get_response_and_check_status(url=self.path, expected_status_code=[401, 403])
+
     def testPost201_OK(self):
         _ = self.post_response_and_check_status(url=self.path, data=self.data_201)
 
@@ -155,6 +178,14 @@ class AcceptStatsListTestCase(BaseTestCase):
     def testPost400_WrongDTFormat(self):
         _ = self.post_response_and_check_status(url=self.path, data=self.data_400_3, expected_status_code=400)
 
+    def testPost401_403_WrongAppToken(self):
+        self.token.set_error(self.token.ERRORS_KEYS.APP_AUTH, self.token.ERRORS.BAD_CODE_403_TOKEN)
+        _ = self.post_response_and_check_status(url=self.path, data=self.data_201, expected_status_code=[401, 403])
+
+    def testPost401_403_ErrorOnAuthService(self):
+        self.token.set_error(self.token.ERRORS_KEYS.APP_AUTH, self.token.ERRORS.BAD_CODE_403_TOKEN)
+        _ = self.post_response_and_check_status(url=self.path, data=self.data_201, expected_status_code=[401, 403])
+
 
 class AcceptStatsTestCase(BaseTestCase):
     """
@@ -162,6 +193,7 @@ class AcceptStatsTestCase(BaseTestCase):
     """
     def setUp(self):
         super().setUp()
+        self.token.set_role(self.token.ROLES.SUPERUSER)
         self.stat = AcceptStats.objects.create(place_id=1, user_id=1, action=AcceptStats.ACCEPTED,
                                                action_dt='2020-03-01T12:12:12Z')
         self.path = self.url_prefix + f'accepts/{self.stat.id}/'
@@ -169,6 +201,10 @@ class AcceptStatsTestCase(BaseTestCase):
 
     def testGet200_OK(self):
         _ = self.get_response_and_check_status(url=self.path)
+
+    def testGet401_403_NotSuperuser(self):
+        self.token.set_role(self.token.ROLES.USER)
+        _ = self.get_response_and_check_status(url=self.path, expected_status_code=[401, 403])
 
     def testGet404_WrongId(self):
         _ = self.get_response_and_check_status(url=self.path_404, expected_status_code=404)
@@ -180,6 +216,7 @@ class RatingStatsListTestCase(BaseTestCase):
     """
     def setUp(self):
         super().setUp()
+        self.token.set_role(self.token.ROLES.SUPERUSER)
         self.path = self.url_prefix + 'ratings/'
         self.stat = RatingStats.objects.create(place_id=1, user_id=1, old_rating=1, new_rating=5,
                                                action_dt='2020-03-01T12:12:12Z')
@@ -222,6 +259,10 @@ class RatingStatsListTestCase(BaseTestCase):
         response = self.get_response_and_check_status(url=self.path + f'?place_id={self.stat.place_id+1000}')
         self.assertEqual(len(response), 0, msg='Instance in response')
 
+    def testGet401_403_NotSuperuser(self):
+        self.token.set_role(self.token.ROLES.USER)
+        _ = self.get_response_and_check_status(url=self.path, expected_status_code=[401, 403])
+
     def testPost201_OK(self):
         _ = self.post_response_and_check_status(url=self.path, data=self.data_201)
 
@@ -234,6 +275,14 @@ class RatingStatsListTestCase(BaseTestCase):
     def testPost400_WrongDTFormat(self):
         _ = self.post_response_and_check_status(url=self.path, data=self.data_400_3, expected_status_code=400)
 
+    def testPost401_403_WrongAppToken(self):
+        self.token.set_error(self.token.ERRORS_KEYS.APP_AUTH, self.token.ERRORS.BAD_CODE_403_TOKEN)
+        _ = self.post_response_and_check_status(url=self.path, data=self.data_201, expected_status_code=[401, 403])
+
+    def testPost401_403_ErrorOnAuthService(self):
+        self.token.set_error(self.token.ERRORS_KEYS.APP_AUTH, self.token.ERRORS.BAD_CODE_403_TOKEN)
+        _ = self.post_response_and_check_status(url=self.path, data=self.data_201, expected_status_code=[401, 403])
+
 
 class RatingStatsTestCase(BaseTestCase):
     """
@@ -241,6 +290,7 @@ class RatingStatsTestCase(BaseTestCase):
     """
     def setUp(self):
         super().setUp()
+        self.token.set_role(self.token.ROLES.SUPERUSER)
         self.stat = RatingStats.objects.create(place_id=1, user_id=1, old_rating=2, new_rating=5,
                                                action_dt='2020-03-01T12:12:12Z')
         self.path = self.url_prefix + f'ratings/{self.stat.id}/'
@@ -248,6 +298,10 @@ class RatingStatsTestCase(BaseTestCase):
 
     def testGet200_OK(self):
         _ = self.get_response_and_check_status(url=self.path)
+
+    def testGet401_403_NotSuperuser(self):
+        self.token.set_role(self.token.ROLES.USER)
+        _ = self.get_response_and_check_status(url=self.path, expected_status_code=[401, 403])
 
     def testGet404_WrongId(self):
         _ = self.get_response_and_check_status(url=self.path_404, expected_status_code=404)

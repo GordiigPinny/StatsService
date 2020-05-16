@@ -8,6 +8,7 @@ class PinPurchasesStatsListTestCase(BaseTestCase):
     """
     def setUp(self):
         super().setUp()
+        self.token.set_role(self.token.ROLES.SUPERUSER)
         self.path = self.url_prefix + 'pin_purchases/'
         self.stat = PinPurchaseStats.objects.create(pin_id=1, user_id=1, purchase_dt='2020-03-01T12:12:12Z')
         self.data_201 = {
@@ -39,6 +40,10 @@ class PinPurchasesStatsListTestCase(BaseTestCase):
         response = self.get_response_and_check_status(url=self.path + f'?pin_id={self.stat.pin_id+1000}')
         self.assertEqual(len(response), 0, msg='Instance in response')
 
+    def testGet401_403_NotSuperuser(self):
+        self.token.set_role(self.token.ROLES.USER)
+        _ = self.get_response_and_check_status(url=self.path, expected_status_code=[401, 403])
+
     def testPost201_OK(self):
         _ = self.post_response_and_check_status(url=self.path, data=self.data_201)
 
@@ -48,6 +53,14 @@ class PinPurchasesStatsListTestCase(BaseTestCase):
     def testPost400_WrongDTFormat(self):
         _ = self.post_response_and_check_status(url=self.path, data=self.data_400_2, expected_status_code=400)
 
+    def testPost401_403_WrongAppToken(self):
+        self.token.set_error(self.token.ERRORS_KEYS.APP_AUTH, self.token.ERRORS.BAD_CODE_403_TOKEN)
+        _ = self.post_response_and_check_status(url=self.path, data=self.data_201, expected_status_code=[401, 403])
+
+    def testPost401_403_ErrorOnAuthService(self):
+        self.token.set_error(self.token.ERRORS_KEYS.APP_AUTH, self.token.ERRORS.BAD_CODE_403_TOKEN)
+        _ = self.post_response_and_check_status(url=self.path, data=self.data_201, expected_status_code=[401, 403])
+
 
 class PinPurchasesStatsTestCase(BaseTestCase):
     """
@@ -55,12 +68,17 @@ class PinPurchasesStatsTestCase(BaseTestCase):
     """
     def setUp(self):
         super().setUp()
+        self.token.set_role(self.token.ROLES.SUPERUSER)
         self.stat = PinPurchaseStats.objects.create(pin_id=1, user_id=1, purchase_dt='2020-03-01T12:12:12Z')
         self.path = self.url_prefix + f'pin_purchases/{self.stat.id}/'
         self.path_404 = self.url_prefix + f'pin_purchases/{self.stat.id + 1000}/'
 
     def testGet200_OK(self):
         _ = self.get_response_and_check_status(url=self.path)
+
+    def testGet401_403_NotSuperuser(self):
+        self.token.set_role(self.token.ROLES.USER)
+        _ = self.get_response_and_check_status(url=self.path, expected_status_code=[401, 403])
 
     def testGet404_WrongId(self):
         _ = self.get_response_and_check_status(url=self.path_404, expected_status_code=404)
@@ -72,6 +90,7 @@ class AchievementsStatsListTestCase(BaseTestCase):
     """
     def setUp(self):
         super().setUp()
+        self.token.set_role(self.token.ROLES.SUPERUSER)
         self.path = self.url_prefix + 'achievements/'
         self.stat = AchievementStats.objects.create(achievement_id=1, user_id=1, achievement_dt='2020-03-01T12:12:12Z')
         self.data_201 = {
@@ -103,6 +122,10 @@ class AchievementsStatsListTestCase(BaseTestCase):
         response = self.get_response_and_check_status(url=self.path + f'?achievement_id={self.stat.achievement_id+1000}')
         self.assertEqual(len(response), 0, msg='Instance in response')
 
+    def testGet401_403_NotSuperuser(self):
+        self.token.set_role(self.token.ROLES.USER)
+        _ = self.get_response_and_check_status(url=self.path, expected_status_code=[401, 403])
+
     def testPost201_OK(self):
         _ = self.post_response_and_check_status(url=self.path, data=self.data_201)
 
@@ -112,6 +135,14 @@ class AchievementsStatsListTestCase(BaseTestCase):
     def testPost400_WrongDTFormat(self):
         _ = self.post_response_and_check_status(url=self.path, data=self.data_400_2, expected_status_code=400)
 
+    def testPost401_403_WrongAppToken(self):
+        self.token.set_error(self.token.ERRORS_KEYS.APP_AUTH, self.token.ERRORS.BAD_CODE_403_TOKEN)
+        _ = self.post_response_and_check_status(url=self.path, data=self.data_201, expected_status_code=[401, 403])
+
+    def testPost401_403_ErrorOnAuthService(self):
+        self.token.set_error(self.token.ERRORS_KEYS.APP_AUTH, self.token.ERRORS.BAD_CODE_403_TOKEN)
+        _ = self.post_response_and_check_status(url=self.path, data=self.data_201, expected_status_code=[401, 403])
+
 
 class AchievementStatsTestCase(BaseTestCase):
     """
@@ -119,12 +150,17 @@ class AchievementStatsTestCase(BaseTestCase):
     """
     def setUp(self):
         super().setUp()
+        self.token.set_role(self.token.ROLES.SUPERUSER)
         self.stat = AchievementStats.objects.create(achievement_id=1, user_id=1, achievement_dt='2020-03-01T12:12:12Z')
         self.path = self.url_prefix + f'achievements/{self.stat.id}/'
         self.path_404 = self.url_prefix + f'achievements/{self.stat.id + 1000}/'
 
     def testGet200_OK(self):
         _ = self.get_response_and_check_status(url=self.path)
+
+    def testGet401_403_NotSuperuser(self):
+        self.token.set_role(self.token.ROLES.USER)
+        _ = self.get_response_and_check_status(url=self.path, expected_status_code=[401, 403])
 
     def testGet404_WrongId(self):
         _ = self.get_response_and_check_status(url=self.path_404, expected_status_code=404)

@@ -7,7 +7,7 @@ class PlaceStatsSerializer(serializers.ModelSerializer):
     """
     Сериализватор для статы по местам
     """
-    action = serializers.CharField(max_length=16)
+    action = serializers.ChoiceField(choices=PlaceStats.ACTION_CHOICES)
     place_id = serializers.IntegerField(min_value=1)
     user_id = serializers.IntegerField(min_value=1, allow_null=True)
 
@@ -23,13 +23,8 @@ class PlaceStatsSerializer(serializers.ModelSerializer):
 
     def validate(self, attrs):
         attrs = super().validate(attrs)
-        if attrs['action'] not in [x[0] for x in PlaceStats.ACTION_CHOICES]:
-            raise serializers.ValidationError('Поле "действие" невалидно')
         if attrs['action'] in PlaceStats.action_statuses_for_registered_user() and attrs['user_id'] is None:
             raise serializers.ValidationError('Поле "user_id" может быть null только при действии OPENED')
-        if isinstance(attrs['action_dt'], str):
-            str_dt = attrs['action_dt']
-            attrs['action_dt'] = datetime.datetime.strptime(str_dt, '%Y-%m-%dT%H:%M:%SZ')
         return attrs
 
     def create(self, validated_data):
@@ -47,7 +42,7 @@ class AcceptStatsSerializer(serializers.ModelSerializer):
     """
     Сериализатор для статы по подтверждениям
     """
-    action = serializers.CharField(max_length=16)
+    action = serializers.ChoiceField(choices=AcceptStats.ACTION_CHOICES)
     place_id = serializers.IntegerField(min_value=1)
     user_id = serializers.IntegerField(min_value=1)
 
@@ -60,15 +55,6 @@ class AcceptStatsSerializer(serializers.ModelSerializer):
             'place_id',
             'action_dt',
         ]
-
-    def validate(self, attrs):
-        attrs = super().validate(attrs)
-        if attrs['action'] not in [x[0] for x in AcceptStats.ACTION_CHOICES]:
-            raise serializers.ValidationError('Поле "действие" невалидно')
-        if isinstance(attrs['action_dt'], str):
-            str_dt = attrs['action_dt']
-            attrs['action_dt'] = datetime.datetime.strptime(str_dt, '%Y-%m-%dT%H:%M:%SZ')
-        return attrs
 
     def create(self, validated_data):
         new = AcceptStats.objects.create(**validated_data)
@@ -100,13 +86,6 @@ class RatingStatsSerializer(serializers.ModelSerializer):
             'new_rating',
             'action_dt',
         ]
-
-    def validate(self, attrs):
-        attrs = super().validate(attrs)
-        if isinstance(attrs['action_dt'], str):
-            str_dt = attrs['action_dt']
-            attrs['action_dt'] = datetime.datetime.strptime(str_dt, '%Y-%m-%dT%H:%M:%SZ')
-        return attrs
 
     def create(self, validated_data):
         new = RatingStats.objects.create(**validated_data)

@@ -19,13 +19,6 @@ class PinPurchaseStatSerializer(serializers.ModelSerializer):
             'purchase_dt',
         ]
 
-    def validate(self, attrs):
-        attrs = super().validate(attrs)
-        if isinstance(attrs['purchase_dt'], str):
-            str_dt = attrs['purchase_dt']
-            attrs['purchase_dt'] = datetime.datetime.strptime(str_dt, '%Y-%m-%dT%H:%M:%SZ')
-        return attrs
-
     def create(self, validated_data):
         new = PinPurchaseStats.objects.create(**validated_data)
         return new
@@ -52,13 +45,6 @@ class AchievementStatSerializer(serializers.ModelSerializer):
             'user_id',
             'achievement_dt',
         ]
-
-    def validate(self, attrs):
-        attrs = super().validate(attrs)
-        if isinstance(attrs['achievement_dt'], str):
-            str_dt = attrs['achievement_dt']
-            attrs['achievement_dt'] = datetime.datetime.strptime(str_dt, '%Y-%m-%dT%H:%M:%SZ')
-        return attrs
 
     def create(self, validated_data):
         new = AchievementStats.objects.create(**validated_data)
